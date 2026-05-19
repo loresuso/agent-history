@@ -20,12 +20,12 @@ func withSandbox(t *testing.T) string {
 }
 
 // writeConfig writes config.json under the sandboxed XDG_CONFIG_HOME.
-func writeConfig(t *testing.T, filter string) {
+func writeConfig(t *testing.T, shell, historyPath, filter string) {
 	t.Helper()
 	if err := os.MkdirAll(configDir(), 0o700); err != nil {
 		t.Fatal(err)
 	}
-	raw, _ := json.Marshal(configFile{Filter: filter})
+	raw, _ := json.Marshal(configFile{Shell: shell, HistoryPath: historyPath, Filter: filter})
 	if err := os.WriteFile(configPath(), raw, 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -58,8 +58,8 @@ func withStdin(t *testing.T, payload string) {
 }
 
 func TestCmdRun_WritesAuditLog(t *testing.T) {
-	withSandbox(t)
-	writeConfig(t, "")
+	home := withSandbox(t)
+	writeConfig(t, "bash", filepath.Join(home, ".bash_history"), "")
 
 	payload := `{
 		"session_id": "sess-abc",
@@ -88,8 +88,8 @@ func TestCmdRun_WritesAuditLog(t *testing.T) {
 }
 
 func TestCmdRun_IgnoresNonBashTools(t *testing.T) {
-	withSandbox(t)
-	writeConfig(t, "")
+	home := withSandbox(t)
+	writeConfig(t, "bash", filepath.Join(home, ".bash_history"), "")
 
 	payload := `{
 		"session_id": "sess-x",
@@ -107,8 +107,8 @@ func TestCmdRun_IgnoresNonBashTools(t *testing.T) {
 }
 
 func TestCmdRun_RespectsFilter(t *testing.T) {
-	withSandbox(t)
-	writeConfig(t, `^ls\b`)
+	home := withSandbox(t)
+	writeConfig(t, "bash", filepath.Join(home, ".bash_history"), `^ls\b`)
 
 	payload := `{
 		"session_id": "sess-f",
@@ -126,7 +126,9 @@ func TestCmdRun_RespectsFilter(t *testing.T) {
 }
 
 func TestCmdRun_BootstrapsConfigOnFirstRun(t *testing.T) {
-	withSandbox(t)
+	home := withSandbox(t)
+	t.Setenv("SHELL", "/bin/zsh")
+	t.Setenv("HISTFILE", filepath.Join(home, ".zsh_history"))
 
 	payload := `{
 		"session_id": "sess-bs",

@@ -18,8 +18,8 @@ func main() {
 		if err := cmdRun(); err != nil {
 			fail(err)
 		}
-	case "search":
-		if err := cmdSearch(os.Args[2:]); err != nil {
+	case "flush":
+		if err := cmdFlush(os.Args[2:]); err != nil {
 			fail(err)
 		}
 	case "tail":
@@ -38,20 +38,19 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, `agent-history - capture coding-agent Bash commands into a searchable audit log
+	fmt.Fprintln(os.Stderr, `agent-history - capture coding-agent Bash commands and flush them to your shell history at SessionEnd
 
 Usage:
-  agent-history run                   PostToolUse handler. Reads hook JSON from stdin.
-  agent-history search [QUERY...]     Search captured commands across all sessions.
-                                      -s ID         filter to a session id substring
-                                      -n N          limit to N results (most-recent first)
-                                      --with-cwd    include the cwd column
-                                      --jsonl       emit raw JSONL records
-  agent-history tail -s <id>          Print the raw JSONL audit log for a session.
+  agent-history run             PostToolUse handler. Reads hook JSON from stdin.
+  agent-history flush [-s ID]   SessionEnd handler. Batch-appends a session's
+                                captured commands to your shell history file.
+                                Without -s, reads SessionEnd JSON from stdin.
+  agent-history tail -s <id>    Print the raw JSONL audit log for a session.
   agent-history version
 
-Designed to be invoked via the agent-history Claude Code plugin's PostToolUse
-hook. Audit logs live at $XDG_DATA_HOME/agent-history/log/ (default
+Normally invoked via the agent-history Claude Code plugin. Config lives at
+$XDG_CONFIG_HOME/agent-history/config.json (default ~/.config/agent-history/).
+Audit logs live at $XDG_DATA_HOME/agent-history/log/ (default
 ~/.local/share/agent-history/log/).`)
 }
 
