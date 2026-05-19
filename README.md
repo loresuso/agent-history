@@ -46,8 +46,9 @@ fine.
 Requires Go on `$PATH` (used by the SessionStart bootstrap script).
 
 ```
-/plugin marketplace add github:loresuso/agent-history
-/plugin install agent-history
+/plugin marketplace add git@github.com:loresuso/agent-history
+/plugin install agent-history@loresuso-plugins
+/reload-plugins
 ```
 
 Restart Claude Code to fire the bootstrap. On the next Bash tool call the
