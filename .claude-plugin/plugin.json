@@ -1,0 +1,8 @@
+{
+  "name": "agent-history",
+  "description": "Capture Bash commands run by coding agents into native shell history and a per-session JSONL audit log.",
+  "version": "0.0.1",
+  "author": {
+    "name": "Lorenzo Susini"
+  }
+}

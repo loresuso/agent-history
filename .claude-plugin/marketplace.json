@@ -1,0 +1,19 @@
+{
+  "name": "loresuso-plugins",
+  "owner": {
+    "name": "Lorenzo Susini"
+  },
+  "metadata": {
+    "description": "Personal Claude Code plugins by loresuso."
+  },
+  "plugins": [
+    {
+      "name": "agent-history",
+      "source": {
+        "source": "github",
+        "repo": "loresuso/agent-history"
+      },
+      "description": "Capture Bash commands run by coding agents into native shell history and a per-session JSONL audit log."
+    }
+  ]
+}
